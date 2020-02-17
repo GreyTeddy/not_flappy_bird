@@ -107,7 +107,7 @@ function Pipe() {
 			dist(this.x + 25, this.y - this.ySpace, ballX, ballY) < 50 ||
 			dist(this.x + 25, this.y + this.ySpace, ballX, ballY) < 50 ||
 			ballY < 25 || ballY > 675) {
-			console.log("( *)__( *)");
+			console.log("ʕ •ᴥ•ʔ");
 			game.playing = false;
 		};
 	}
@@ -125,3 +125,5 @@ function Pipe() {
 }
 
 function keyPressed() { game.ball.jump(); }
+
+function touchStarted() { game.ball.jump(); }
