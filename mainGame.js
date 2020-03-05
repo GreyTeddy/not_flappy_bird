@@ -3,7 +3,8 @@ var gHeight = 700;
 var game;
 
 function setup() {
-	createCanvas(gWidth, gHeight);
+	const canvas = createCanvas(gWidth, gHeight);
+	canvas.parent("game");
 	textSize(32);
 	noStroke();
 	background(255);
@@ -42,17 +43,11 @@ function Game() {
 		}
 		else {
 			text(">__<", 250, 100);
+			// add the again button
 			noLoop();
-			let button = document.createElement("button");
-			button.innerHTML = "Again";
-
-			let body = document.getElementsByTagName("body")[0];
-			body.appendChild(button);
-
-			button.addEventListener("click", () => {
-				window.location.replace("index.html");
-			})
-
+			let button = document.getElementsByTagName("button")[0];
+			button.removeAttribute("style");
+			button.focus();
 		}
 	}
 

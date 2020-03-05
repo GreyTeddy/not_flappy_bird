@@ -4,12 +4,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Flappy Bird Mockup</title>
+  <title>Not Flappy Bird</title>
   <script src="p5.min.js"></script>
   <script src="mainGame.js"></script>
+  <link rel="stylesheet" href="main.css">
 </head>
 
 <body>
+  <div id="game"></div>
+  <div id="again-button">
+    <button style="display: none;"></button>
+    <script>
+      let button = document.getElementsByTagName("button")[0];
+      button.addEventListener("click", () => {
+        window.location.replace("index.html");
+      })
+    </script>
+  </div>
 </body>
 
 </html>
