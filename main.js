@@ -1,129 +1,40 @@
-var gWidth = 500;
-var gHeight = 700;
-var game;
+const { app, BrowserWindow, Menu } = require('electron')
 
-function setup() {
-	createCanvas(gWidth, gHeight);
-	textSize(32);
-	noStroke();
-	background(255);
-	fill(0);
+function createWindow() {
+	// Create the browser window.
+	const win = new BrowserWindow({
+		width: 530,
+		height: 780
+	})
 
-	game = new Game();
-	game.setup();
-	textAlign(CENTER);
+	// and load the index.html of the app.
+	win.loadFile('index.html');
+
+	//no Application Menu
+	win.setMenuBarVisibility(false);
 }
 
-function draw() {
-	game.run();
-}
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.whenReady().then(createWindow)
 
-function Game() {
-	this.ball = new Ball();
-	this.pipes;
-	this.playing = false;
-	this.points = 0;
-	this.setup = () => {
-		this.pipes = Array();
-		this.pipes.push(new Pipe());
-		this.pipes.push(new Pipe());
-		this.pipes[1].x = 775;
-		this.playing = true;
+// Quit when all windows are closed.
+app.on('window-all-closed', () => {
+	// On macOS it is common for applications and their menu bar
+	// to stay active until the user quits explicitly with Cmd + Q
+	if (process.platform !== 'darwin') {
+		app.quit()
 	}
-	this.run = () => {
-		if (this.playing) {
-			background(255);
-			this.ball.run();
-			for (var p = 0; p < this.pipes.length; p++) {
-				this.pipes[p].run(this.ball);
-				this.pipes[p].touched(this.ball.x, this.ball.y);
-				this.pipes[p].passed(this.ball.x, this.ball.y);
-			}
-		}
-		else {
-			text(">__<", 250, 100);
-		}
-	}
-}
+})
 
-function Ball() {
-	this.name = "ball";
-	this.size = 100; //diameter
-	this.x = 130;
-	this.y = 200;
-	this.vel = 0;
-	this.gravity = 0.4;
-	this.physics = () => {
-		//change y for gravity
-		this.vel += this.gravity;
-		this.y += this.vel;
+app.on('activate', () => {
+	// On macOS it's common to re-create a window in the app when the
+	// dock icon is clicked and there are no other windows open.
+	if (BrowserWindow.getAllWindows().length === 0) {
+		createWindow()
 	}
-	this.jump = () => {
-		if (this.vel > -10) { this.vel = -7; }
-	}
-	this.show = () => {
-		//		fill(255,0,0);
-		ellipse(this.x, this.y, this.size / 2)
-	}
+})
 
-	this.run = () => {
-		this.physics();
-		this.show();
-	}
-}
-
-function Pipe() {
-	this.x = gWidth;
-	this.y = map(Math.random(), 0, 1, 100, 500);
-	this.ySpace = 80;
-	this.notPassed = true;
-	this.show = () => {
-		fill(0);
-		rect(this.x, -this.ySpace / 2,
-			50, this.y - this.ySpace / 2);
-		rect(this.x, this.y + this.ySpace,
-			50, gHeight);
-		ellipse(this.x + 25,
-			this.y - this.ySpace, 50);
-		ellipse(this.x + 25,
-			this.y + this.ySpace, 50);
-		fill(255);
-		text(game.points, this.x + 25, this.y);
-		fill(0);
-
-	}
-	this.move = () => {
-		this.x -= 2;
-		if (this.x < -50) {
-			this.x = gWidth;
-			this.notPassed = true;
-		}
-
-	}
-	this.touched = (ballX, ballY) => {
-		//ballX>this.x-25 && ballX<this.x+75 ||
-		if ((ballX > this.x - 25 && ballX < this.x + 75 &&
-			(ballY < this.y - this.ySpace || ballY > this.y + this.ySpace)) ||
-			dist(this.x + 25, this.y - this.ySpace, ballX, ballY) < 50 ||
-			dist(this.x + 25, this.y + this.ySpace, ballX, ballY) < 50 ||
-			ballY < 25 || ballY > 675) {
-			console.log("ʕ •ᴥ•ʔ");
-			game.playing = false;
-		};
-	}
-	this.passed = (ballX) => {
-		if (this.notPassed && ballX > this.x) {
-			game.points += 1;
-			console.log(game.points);
-			this.notPassed = false;
-		}
-	}
-	this.run = () => {
-		this.show();
-		this.move();
-	}
-}
-
-function keyPressed() { game.ball.jump(); }
-
-function touchStarted() { game.ball.jump(); }
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and require them here.
