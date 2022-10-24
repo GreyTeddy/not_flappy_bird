@@ -1,8 +1,11 @@
-var gWidth = 500;
-var gHeight = 700;
+var gWidth;
+var gHeight;
 var game;
+var cheat;
 
 function setup() {
+	gWidth = windowWidth - 10;
+	gHeight = windowHeight - 10;
 	createCanvas(gWidth, gHeight);
 	textSize(32);
 	noStroke();
@@ -23,11 +26,19 @@ function Game() {
 	this.pipes;
 	this.playing = false;
 	this.points = 0;
+	this.pipe_gap = 275
 	this.setup = () => {
 		this.pipes = Array();
 		this.pipes.push(new Pipe());
-		this.pipes.push(new Pipe());
-		this.pipes[1].x = 775;
+		let last_index = this.pipes.length - 1;
+		let last_pipe_x = this.pipes[last_index].x
+		while (this.pipes[last_index].x < gWidth * 2 - this.pipe_gap) {
+			this.pipes.push(new Pipe());
+			this.pipes[last_index + 1].x = last_pipe_x + this.pipe_gap;
+			last_pipe_x = this.pipes[last_index + 1].x
+			last_index = this.pipes.length - 1;
+			// console.log(last_pipe_x, this.pipes[last_index].x,last_index)
+		}
 		this.playing = true;
 	}
 	this.run = () => {
@@ -41,7 +52,7 @@ function Game() {
 			}
 		}
 		else {
-			text(">__<", 250, 100);
+			text(">__<", gWidth/2, 100);
 		}
 	}
 }
@@ -74,28 +85,30 @@ function Ball() {
 
 function Pipe() {
 	this.x = gWidth;
-	this.y = map(Math.random(), 0, 1, 100, 500);
+	this.y = map(Math.random(), 0, 1, 100, gHeight - 100);
 	this.ySpace = 80;
 	this.notPassed = true;
+	this.width = 50
 	this.show = () => {
 		fill(0);
 		rect(this.x, -this.ySpace / 2,
-			50, this.y - this.ySpace / 2);
+			this.width, this.y - this.ySpace / 2);
 		rect(this.x, this.y + this.ySpace,
-			50, gHeight);
-		ellipse(this.x + 25,
-			this.y - this.ySpace, 50);
-		ellipse(this.x + 25,
-			this.y + this.ySpace, 50);
+			this.width, gHeight);
+		ellipse(this.x + this.width / 2,
+			this.y - this.ySpace, this.width);
+		ellipse(this.x + this.width / 2,
+			this.y + this.ySpace, this.width);
 		fill(255);
-		text(game.points, this.x + 25, this.y);
+		text(game.points, this.x + this.width / 2, this.y);
 		fill(0);
-
 	}
 	this.move = () => {
 		this.x -= 2;
 		if (this.x < -50) {
-			this.x = gWidth;
+			console.log(this.x)
+			this.x = gWidth + game.pipe_gap - this.width;
+			this.y = map(Math.random(), 0, 1, 100, gHeight - 100);
 			this.notPassed = true;
 		}
 
@@ -106,7 +119,7 @@ function Pipe() {
 			(ballY < this.y - this.ySpace || ballY > this.y + this.ySpace)) ||
 			dist(this.x + 25, this.y - this.ySpace, ballX, ballY) < 50 ||
 			dist(this.x + 25, this.y + this.ySpace, ballX, ballY) < 50 ||
-			ballY < 25 || ballY > 675) {
+			ballY < 25 || ballY > gHeight + 128) {
 			console.log("ʕ •ᴥ•ʔ");
 			game.playing = false;
 		};
@@ -124,6 +137,18 @@ function Pipe() {
 	}
 }
 
-function keyPressed() { game.ball.jump(); }
+function keyPressed() {
+	if (game.playing == true) { game.ball.jump(); }
+	else {
+		game = new Game();
+		game.setup();
+	}
+}
 
-function touchStarted() { game.ball.jump(); }
+function touchStarted() {
+	if (game.playing == true) { game.ball.jump(); }
+	else {
+		game = new Game();
+		game.setup();
+	}
+}
