@@ -28,6 +28,10 @@ function Game() {
 	this.playing = false;
 	this.points = 0;
 	this.pipe_gap = 275
+	this.new_pipe_spawn = -50
+	while (this.new_pipe_spawn < gWidth){
+		this.new_pipe_spawn += this.pipe_gap
+	}
 	this.setup = () => {
 		this.pipes = Array();
 		this.pipes.push(new Pipe());
@@ -106,18 +110,18 @@ function Pipe() {
 	this.move = () => {
 		this.x -= 2;
 		if (this.x < -50) {
-			this.x = gWidth + game.pipe_gap - this.width;
+			this.x = game.new_pipe_spawn;
 			this.y = map(Math.random(), 0, 1, 100, gHeight - 100);
 			this.notPassed = true;
 		}
 
 	}
 	this.touched = (ballX, ballY) => {
-		if ((ballX > this.x - 25 && ballX < this.x + 75 &&
+		if ((ballX > this.x - this.width / 2 && ballX < this.x + this.width / 2 * 3 &&
 			(ballY < this.y - this.ySpace || ballY > this.y + this.ySpace)) ||
-			dist(this.x + 25, this.y - this.ySpace, ballX, ballY) < 50 ||
-			dist(this.x + 25, this.y + this.ySpace, ballX, ballY) < 50 ||
-			ballY < 25 || ballY > gHeight + 128) {
+			dist(this.x + this.width / 2, this.y - this.ySpace, ballX, ballY) < this.width ||
+			dist(this.x + this.width / 2, this.y + this.ySpace, ballX, ballY) < this.width ||
+			ballY < this.width / 2 || ballY > gHeight + this.width * 4) {
 			console.log("ʕ •ᴥ•ʔ");
 			game.playing = false;
 		};
