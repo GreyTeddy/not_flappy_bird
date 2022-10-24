@@ -2,10 +2,11 @@ var gWidth;
 var gHeight;
 var game;
 var cheat;
+var released = true;
 
 function setup() {
-	gWidth = windowWidth - 10;
-	gHeight = windowHeight - 10;
+	gWidth = windowWidth;
+	gHeight = windowHeight;
 	createCanvas(gWidth, gHeight);
 	textSize(32);
 	noStroke();
@@ -37,7 +38,6 @@ function Game() {
 			this.pipes[last_index + 1].x = last_pipe_x + this.pipe_gap;
 			last_pipe_x = this.pipes[last_index + 1].x
 			last_index = this.pipes.length - 1;
-			// console.log(last_pipe_x, this.pipes[last_index].x,last_index)
 		}
 		this.playing = true;
 	}
@@ -106,7 +106,6 @@ function Pipe() {
 	this.move = () => {
 		this.x -= 2;
 		if (this.x < -50) {
-			console.log(this.x)
 			this.x = gWidth + game.pipe_gap - this.width;
 			this.y = map(Math.random(), 0, 1, 100, gHeight - 100);
 			this.notPassed = true;
@@ -114,7 +113,6 @@ function Pipe() {
 
 	}
 	this.touched = (ballX, ballY) => {
-		//ballX>this.x-25 && ballX<this.x+75 ||
 		if ((ballX > this.x - 25 && ballX < this.x + 75 &&
 			(ballY < this.y - this.ySpace || ballY > this.y + this.ySpace)) ||
 			dist(this.x + 25, this.y - this.ySpace, ballX, ballY) < 50 ||
@@ -145,10 +143,21 @@ function keyPressed() {
 	}
 }
 
-function touchStarted() {
+// https://github.com/processing/p5.js/issues/1815
+function mousePressed() {
+	if(!released){
+		return;
+	}
+	released = false;
+
 	if (game.playing == true) { game.ball.jump(); }
 	else {
 		game = new Game();
 		game.setup();
 	}
+}
+
+function mouseReleased(){
+	released = true;
+	return false;
 }
